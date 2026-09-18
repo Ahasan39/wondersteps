@@ -104,12 +104,19 @@ Storage events update other tabs without writing back, preventing event loops. A
 
 Settings reset requires an accessible confirmation dialog with cancel as the initial focus, keyboard trapping, Escape dismissal and restored trigger focus. Confirming clears/replaces the saved progress and restores Level 1, zero stars/coins/attempts and empty future IDs. Session sound preferences are unaffected. Persistence failure is reported. No developer harness or normal-user completion button is included.
 
-## GitHub Pages plan
-Vite uses `base: '/wondersteps/'`; all bundled assets receive the repository prefix. HashRouter produces URLs such as `https://USERNAME.github.io/wondersteps/#/levels`, which survive refresh and direct navigation.
-The project is connected to https://github.com/Ahasan39/wondersteps. In a dedicated later step, enable Pages via GitHub Actions, run `npm ci` and `npm run build`, and upload/deploy `dist` with the official Pages actions. The expected URL is https://ahasan39.github.io/wondersteps/. Change Vite's base if the repository name changes. A custom-domain/root deployment needs `base: '/'`. No deployment workflow or deployment has been created.
+## Deployment
+Production: https://ahasan39.github.io/wondersteps/
+
+GitHub Actions → GitHub Pages, from branch `main`. Pushes to `main` automatically run `.github/workflows/deploy-pages.yml`: Node 24 with npm caching, `npm ci`, TypeScript, lint, unit tests and the production build, followed by official Pages artifact upload and deployment of `dist/`. The workflow also supports manual dispatch on `main`; deployment concurrency protects active runs. Generated output is not committed.
+
+In repository **Settings → Pages → Build and deployment**, select **GitHub Actions** as the source before the first deployment. If the initial run fails because Pages is not enabled, select that source and rerun the workflow.
+
+Vite retains `base: '/wondersteps/'`. HashRouter retains static-host-compatible URLs such as `https://ahasan39.github.io/wondersteps/#/levels` and `#/play/1`, supporting direct links, refresh and browser history without server rewrites. Use hash routes rather than `/wondersteps/levels`.
+
+The `wondersteps.player-progress` storage key is unchanged. Localhost and GitHub Pages are separate browser origins, so production begins with its own fresh save; no environment reset or migration is performed.
 
 ## Intentionally deferred
-Levels 6–20 gameplay, memory boards, real audio/music, achievement unlocking, reward shop, backend, database, authentication and cloud sync remain unimplemented. No Pages deployment or deployment workflow has been created.
+Levels 6–20 gameplay, memory boards, real audio/music, achievement unlocking, reward shop, backend, database, authentication and cloud sync remain unimplemented. Phase 5 has not started.
 
 ## Verification
 `npm run build` runs strict TypeScript checking before the production bundle. `npm run lint` checks source with Oxlint. Playwright tests the production preview under the configured repository base path, checks all routes across the widths above, verifies initial locks and sound preference behavior, tests reduced motion and keyboard skip navigation, and generates screenshots for visual inspection.
