@@ -3,21 +3,21 @@ import { useLocation, useParams } from 'react-router-dom'
 import { levels } from '../data/worlds'
 import { usePreferences } from '../store/PreferencesContext'
 import { Badge, ButtonLink, GameCard } from '../components/ui/Primitives'
+import { ResetProgress } from '../components/game/ResetProgress'
 
 export default function Placeholder() {
   const { pathname } = useLocation()
   const { levelId } = useParams()
   const { soundEnabled, toggleSound } = usePreferences()
   const level = levels.find(item => String(item.id) === levelId)
-  const isPlay = pathname.startsWith('/play/')
   const isResults = pathname.startsWith('/results/')
   const isSettings = pathname === '/settings'
   const isAchievements = pathname === '/achievements'
   const isRewards = pathname === '/rewards'
-  const adventureDestination = isPlay || isResults || isAchievements || isRewards
+  const adventureDestination = isResults || isAchievements || isRewards
   const Icon = isSettings ? Settings : isAchievements ? Trophy : isRewards ? Gift : Rocket
-  const title = isSettings ? 'Just your way' : isAchievements ? 'Little victories await' : isRewards ? 'Pip’s treasure nook' : (isPlay || isResults) && !level ? 'This step is still a mystery' : isResults ? 'Your story is just beginning' : isPlay ? level!.name : 'Let’s find your way'
-  const description = isSettings ? 'A cozy little corner for your preferences.' : isAchievements ? 'Every little discovery will be worth celebrating. When gameplay arrives, your achievements will find a home here.' : isRewards ? 'A new hat? A cozy scarf? Future adventures may bring little outfits for Pip. Rewards will become available through play.' : isResults ? 'No results yet. Scores and stars will appear after gameplay is added.' : isPlay && level ? level.id === 1 ? 'Pip is getting this adventure ready! Color Match gameplay is coming in a future phase.' : 'This level is locked. Your adventure will begin with Level 1 when gameplay arrives.' : 'This page doesn’t exist. Pip can help you get back home.'
+  const title = isSettings ? 'Just your way' : isAchievements ? 'Little victories await' : isRewards ? 'Pip’s treasure nook' : isResults && !level ? 'This step is still a mystery' : isResults ? 'Your story is just beginning' : 'Let’s find your way'
+  const description = isSettings ? 'A cozy little corner for your preferences.' : isAchievements ? 'Every little discovery will be worth celebrating. When gameplay arrives, your achievements will find a home here.' : isRewards ? 'A new hat? A cozy scarf? Future adventures may bring little outfits for Pip. Rewards will become available through play.' : isResults ? 'The game results screen is coming with gameplay. Your saved best scores and stars are shown on completed map steps.' : 'This page doesn’t exist. Pip can help you get back home.'
   return <div className={`empty-page ${isAchievements ? 'achievements-page' : isRewards ? 'rewards-page' : ''}`}>
     <GameCard>
       <div className="empty-illustration"><span className="empty-spark spark-left" aria-hidden="true"><Star size={25}/></span><span className="empty-icon"><Icon size={46}/></span><span className="empty-spark spark-right" aria-hidden="true"><Sparkles size={29}/></span></div>
@@ -27,6 +27,7 @@ export default function Placeholder() {
       {isSettings && <><div className="preference-row"><span><strong>Sound preference</strong><small>Session only · game audio is not added yet</small></span><button className="sound-switch" aria-pressed={soundEnabled} onClick={toggleSound}>{soundEnabled ? <Volume2 size={20}/> : <VolumeX size={20}/>} {soundEnabled ? 'On' : 'Off'}</button></div><div className="motion-note"><Sparkles size={18}/><span>Animations follow your device’s reduced-motion setting.</span></div></>}
       <ButtonLink to={adventureDestination ? '/levels' : '/'}><Compass size={20}/>{adventureDestination ? 'Back to adventure' : 'Back to home'}</ButtonLink>
       {isAchievements && <ButtonLink to="/rewards" secondary><Gift size={20}/> Visit rewards</ButtonLink>}
+      {isSettings && <ResetProgress/>}
     </GameCard>
   </div>
 }

@@ -109,7 +109,7 @@ test('home destinations, back navigation and session preference', async ({ page 
   await page.getByRole('link', { name: /Let’s play/ }).focus()
   await page.keyboard.press('Enter')
   await expect(page).toHaveURL(/#\/levels$/)
-  expect(await page.evaluate(() => localStorage.length)).toBe(0)
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('wondersteps.player-progress')!).version)).toBe(1)
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(page.locator('.current .level-node')).toHaveCSS('animation-name', 'none')
   await expect(page.locator('.route-content')).toHaveCSS('transform', 'none')
