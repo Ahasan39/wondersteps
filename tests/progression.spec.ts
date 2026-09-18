@@ -157,7 +157,7 @@ test('denied browser storage remains usable and reset reports session-only recov
   await expect(page.getByText(/Browser saving is unavailable/)).toBeVisible()
   await page.getByRole('button', { name: 'Reset progress', exact: true }).click()
   await page.getByRole('button', { name: 'Yes, reset progress' }).click()
-  await expect(page.getByRole('status')).toHaveText(/could not save the change/)
+  await expect(page.locator('.reset-status')).toHaveText(/could not save the change/)
   await page.goto('/wondersteps/#/play/1')
   await expect(page.getByRole('heading', { name: 'Color Match', exact: true })).toBeVisible()
   expect(errors).toEqual([])

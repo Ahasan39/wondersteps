@@ -4,6 +4,7 @@ import { Check } from 'lucide-react'
 import type { Choice, GameSession, Question } from './types'
 import { Visual } from './Visual'
 import { positiveFeedback } from './session'
+import { GameSparkles } from './Sparkles'
 
 export function RoundProgress({ session }: { session: GameSession }) {
  return <div className="round-progress"><span>Round {session.roundIndex + 1} / {session.questions.length}</span><span>Score: {session.score}</span>
@@ -28,11 +29,12 @@ export function AnswerCard({ choice, state, disabled, onAnswer }: { choice: Choi
  const reduced = useReducedMotion()
  return <motion.button type="button" className={'answer-card answer-' + state} aria-label={choice.label} disabled={disabled}
   onClick={onAnswer} onKeyDown={event => { if (event.repeat && (event.key === 'Enter' || event.key === ' ')) event.preventDefault() }}
-  animate={reduced ? {} : state === 'correct' ? {scale:[1,1.035,1]} : state === 'incorrect' ? {x:[0,-3,3,0]} : {scale:1,x:0}}
-  transition={{duration:reduced ? 0 : .2}}>
+  whileTap={reduced?undefined:{scale:.97}}
+  animate={reduced ? {} : state === 'correct' ? {scale:[1,1.055,1]} : state === 'incorrect' ? {x:[0,-3,3,0]} : {scale:1,x:0}}
+  transition={{duration:reduced ? 0 : .35}}>
   {choice.color ? <span className={'color-swatch swatch-' + choice.color} aria-hidden="true"/>
    : choice.visual ? <Visual id={choice.visual}/> : <strong className="number-choice">{choice.number}</strong>}
-  <span className="answer-label">{choice.label}</span>{state === 'correct' && <Check className="answer-check" size={20} aria-hidden="true"/>}
+  <span className="answer-label">{choice.label}</span>{state === 'correct' && <><motion.span className="answer-check" initial={reduced?false:{opacity:0,scale:.4}} animate={{opacity:1,scale:1}} transition={{duration:reduced?0:.2}}><Check size={20} aria-hidden="true"/></motion.span><GameSparkles/></>}
  </motion.button>
 }
 export function ChoiceGrid({ session, onAnswer }: { session:GameSession; onAnswer:(questionId:string,answerId:string)=>void }) {

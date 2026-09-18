@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-export const PreferencesContext = createContext<{ soundEnabled: boolean; toggleSound: () => void } | null>(null)
+export const PreferencesContext = createContext<{ soundEnabled:boolean; musicEnabled:boolean; sfxEnabled:boolean; toggleSound:()=>void; toggleMusic:()=>void; toggleSfx:()=>void; preferencesPersisted:boolean } | null>(null)
 export function usePreferences() {
   const value = useContext(PreferencesContext)
   if (!value) throw new Error('PreferencesProvider required')

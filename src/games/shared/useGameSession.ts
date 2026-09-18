@@ -43,11 +43,12 @@ export function useGameSession(level:Level, game:GameDefinition, options: { rand
   return () => window.clearTimeout(timer)
  },[session,options.feedbackDelay,save,update])
  const start = () => {
-  if (current.current) return
+  if (current.current) return false
   const next=createSession(game,options.random)
   const attempt=recordAttempt(level.id)
-  if (!attempt.ok) {setError('This step is not ready. Return to your adventure.');return}
+  if (!attempt.ok) {setError('This step is not ready. Return to your adventure.');return false}
   setError('');update(next)
+  return true
  }
  const answer = (questionId:string,answerId:string) => {
   if (!current.current) return

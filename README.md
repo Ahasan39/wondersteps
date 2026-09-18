@@ -1,9 +1,9 @@
 # WonderSteps
 **Phase 1: Foundation & Design System**
 
-**Current phase: Phase 4 — World 1 Gameplay**
+**Current phase: Phase 4.1 — Audio, Animation & Mobile Game Experience**
 
-Phase 2 added the illustrated adventure entrance and responsive world environments. Phase 3 added the reusable progression engine, safe browser persistence, protected play routes and confirmed progress reset. Phase 4 integrates five real World 1 games with that engine.
+Phase 2 added the illustrated adventure entrance and responsive world environments. Phase 3 added the reusable progression engine, safe browser persistence, protected play routes and confirmed progress reset. Phase 4 integrated five real World 1 games. Phase 4.1 polishes their audio, reactions and mobile presentation without changing educational content or progression.
 
 A fully static, responsive educational game foundation for curious children ages 4–8. The visual identity combines friendly violet, sky blue, warm gold, rounded surfaces, and Pip, an original inline-SVG mascot.
 
@@ -33,7 +33,8 @@ The lockfile records installed stable compatible versions: React 19, TypeScript 
 - `src/games`: game registry, separate educational content pools, pure session transitions, shared UI, original SVG artwork and session hook.
 - `src/types`: typed game, progression, achievement and reward contracts.
 - `src/hooks`: UI-facing progress selectors and engine operations.
-- `src/store`: centralized reactive progress store/provider and session-only sound preferences.
+- `src/store`: centralized reactive progress store/provider and independent persistent audio preferences.
+- `src/audio`: lightweight AudioProvider, semantic events, safe preference storage, one audio manager and an on-demand native Web Audio synthesizer.
 - `src/engine`: pure validated progression, wallet and star-threshold functions.
 - `src/storage`: versioned browser storage adapter and data sanitizer.
 - `src/utils`: readable compact wallet-counter formatting.
@@ -54,7 +55,7 @@ Browser checks cover 320, 360, 375, 390, 414, 430, 480, 768, 1024, 1280, 1440 an
 ## Routes
 Hash-based routes work on static GitHub Pages without server rewrites:
 `/`, `/levels`, `/play/:levelId`, `/results/:levelId`, `/achievements`, `/rewards`, `/settings`.
-An unknown-route screen provides a way home. Home Play, Explore and Start journey lead to Levels. Unlocked Levels 1–5 open a short intro and Start button; Levels 6–20 retain their coming-soon stage. Invalid/noncanonical IDs and locked play routes redirect to Levels with replacement navigation. Completed levels remain accessible for replay. Page visits never record attempts or completion. Real completion results appear inside the play route; the separate results route, achievements and rewards remain future-system empty states. Sound controls change a session preference only; no audio exists yet. Animations follow the device reduced-motion preference and page entrances take 180ms.
+An unknown-route screen provides a way home. Home Play, Explore and Start journey lead to Levels. Unlocked Levels 1–5 open a short intro and Start button; Levels 6–20 retain their coming-soon stage. Invalid/noncanonical IDs and locked play routes redirect to Levels with replacement navigation. Completed levels remain accessible for replay. Page visits never record attempts or completion. Real completion results appear inside the play route; the separate results route, achievements and rewards remain future-system empty states. Music/SFX controls persist independently. Animations follow the device reduced-motion preference and page entrances take 180ms.
 
 ## Planned adventure
 | World | Levels |
@@ -83,7 +84,7 @@ First completion pays 30/50/75 coins for one/two/three stars (zero coins for zer
 
 Start calls the existing attempt API exactly once. Back or refresh discards unfinished rounds, while the recorded attempt remains. Returning opens the intro and requires another Start. Transient questions, feedback, timers and score are never stored in PlayerProgress. Replay returns to the intro for a fresh attempt.
 
-Correct feedback locks all choices for 650ms before advancing; question IDs reject stale input and synchronous session refs reject double scoring. Feedback delay is injectable in the session hook. Keyboard-repeat Enter/Space is ignored; focus moves to each new question and the result heading. Choice buttons support keyboard activation, visible focus, meaningful names and polite live feedback. Color names and illustrated word labels avoid relying on visuals alone. Reduced motion disables answer bounce/shake. Semantic correct/incorrect/levelComplete callback events are ready for future sound, with no audio engine or assets.
+Correct feedback locks all choices for 650ms before advancing; question IDs reject stale input and synchronous session refs reject double scoring and repeated SFX. Feedback delay is injectable in the session hook. Keyboard-repeat Enter/Space is ignored; focus moves to each new question and the result heading. Choice buttons support keyboard activation, visible focus, meaningful names and polite live feedback. Color names and illustrated word labels avoid relying on visuals alone. Reduced motion disables answer bounce/shake.
 
 The stage stays within 780px on desktop, uses large two-column phone choices and four-column desktop choices, and recomposes the prompt beside compact choices on phone landscape. Browser checks exercise all five games at the twelve target widths and 667×375 landscape.
 
@@ -102,7 +103,24 @@ The storage adapter supports load/save/clear and sanitizes unknown data before i
 
 Storage events update other tabs without writing back, preventing event loops. A fresh read when attaching the listener avoids overwriting changes made since store initialization. Synchronization uses the last stored document, with no transactional merging of simultaneous tab writes.
 
-Settings reset requires an accessible confirmation dialog with cancel as the initial focus, keyboard trapping, Escape dismissal and restored trigger focus. Confirming clears/replaces the saved progress and restores Level 1, zero stars/coins/attempts and empty future IDs. Session sound preferences are unaffected. Persistence failure is reported. No developer harness or normal-user completion button is included.
+Settings reset requires an accessible confirmation dialog with cancel as the initial focus, keyboard trapping, Escape dismissal and restored trigger focus. Confirming clears/replaces the saved progress and restores Level 1, zero stars/coins/attempts and empty future IDs. Audio preferences are unaffected. Persistence failure is reported. No developer harness or normal-user completion button is included.
+
+## Phase 4.1 game feel and audio
+The compact HUD toggles all audio; Settings controls Music and SFX independently. Both default to off, preserving the previous silent default. Preferences use `wondersteps.audio-preferences`, version 1, separately from player progress. Invalid saves recover safely; denied storage leaves controls working in memory.
+
+AudioContext creation/resume occurs after an intentional interaction, never during initial rendering. Synthesis code loads on demand when audio is enabled. This follows [Web Audio autoplay guidance](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices). Playback/load failures are caught without blocking gameplay. Music starts with an accepted Start, continues through the result, and stops on Replay or leaving the game. Visibility, page lifecycle and native context state changes stop hidden/interrupted playback; only previously activated, enabled audio can resume. One manager owns one context, one synthesizer and one loop, with cleanup on unmount.
+
+**Audio credits:** all audio is original, project-generated Web Audio synthesis; there are no third-party audio assets, hotlinks or audio binaries. The original eight-bar, 20-second, 96-bpm adventure score uses a soft bell melody, warm triangle chords and quiet bass. Music gain is 0.25 and SFX gain 0.55 with gentle per-note envelopes. Semantic cues cover gameStart, buttonTap, correct, incorrect, star, coin, levelComplete and levelUnlock. Incorrect feedback uses soft descending notes rather than a buzzer. No additional audio or animation library was added.
+
+Pip has idle, thinking, happy, encouraging and celebrating SVG states with unique gradient IDs. Correct cards pop, show a check and four tiny stars; wrong cards give a 350ms gentle shake and encouraging Pip feedback. The current challenge fades briefly at the end of the unchanged 650ms success period; the next enters in 160ms. Results celebrate for about two seconds with eight tiny sparkles, sequential earned-star reveals, one coin icon/count-up and a first-completion-only unlock reveal. Actions are available immediately, and animation never changes the saved reward. Unmount cancels delayed celebration cues.
+
+Active phone gameplay has Back, level and audio/settings in a compact HUD, a viewport-aware stage, safe-area padding and large touch controls. Landscape places Pip/task on the left and choices on the right. Desktop keeps a centered 780px game surface. Feedback, prompt and reward regions reserve space to avoid layout shifts. Motion uses transforms/opacity; reduced motion removes floating, shaking and particles and shows rewards immediately. Zoom remains enabled.
+
+**Footer credit:** “Design and Developed by Ahasan39” links to https://ahasan39.github.io/ unchanged. It is hidden only in the active immersive phone/landscape game viewport; normal pages, intros, results and desktop keep it visible.
+
+**Performance baseline:** pre-polish production main JS 356.08 KB / 113.08 KB gzip, gameplay 28.02 / 9.21 KB, CSS 38.00 / 9.15 KB; shared progress chunk 56.11 / 20.29 KB. Favicon is 196 bytes. Audio rendering has no download/decode dependency and introduces no initial audio requests. The synthesizer remains a small lazy chunk; gameplay/result changes stay in the existing lazy play route. Local comparison artifacts are ignored. Lighthouse is not installed, so no Lighthouse or PageSpeed scores are claimed.
+
+**After polish:** main JS 361.63 KB / 114.95 KB gzip (+1.87 KB gzip), gameplay 44.34 / 15.67 KB, CSS 45.30 / 10.13 KB; shared progress is unchanged. The new lazy synthesizer is 1.86 / 0.94 KB. On the same 390×844 production-preview home load, encoded JS/CSS resource bodies total 144,041 bytes versus 141,189 before (+2,852 bytes, about 2%). No audio context or audio chunk is created/requested on initial load. Native Chromium audio smoke checks confirm a running 48 kHz context after interaction, suspension while hidden, resumption when visible and zero live oscillator voices after Back, without console errors. Speaker quality still needs listening on physical devices.
 
 ## Deployment
 Production: https://ahasan39.github.io/wondersteps/
@@ -116,7 +134,7 @@ Vite retains `base: '/wondersteps/'`. HashRouter retains static-host-compatible 
 The `wondersteps.player-progress` storage key is unchanged. Localhost and GitHub Pages are separate browser origins, so production begins with its own fresh save; no environment reset or migration is performed.
 
 ## Intentionally deferred
-Levels 6–20 gameplay, memory boards, real audio/music, achievement unlocking, reward shop, backend, database, authentication and cloud sync remain unimplemented. Phase 5 has not started.
+Levels 6–20 gameplay, memory boards, achievement unlocking, reward shop, backend, database, authentication, cloud sync and PWA/service workers remain unimplemented. Phase 5 has not started.
 
 ## Verification
 `npm run build` runs strict TypeScript checking before the production bundle. `npm run lint` checks source with Oxlint. Playwright tests the production preview under the configured repository base path, checks all routes across the widths above, verifies initial locks and sound preference behavior, tests reduced motion and keyboard skip navigation, and generates screenshots for visual inspection.
@@ -124,3 +142,5 @@ Levels 6–20 gameplay, memory boards, real audio/music, achievement unlocking, 
 Phase 2 regression tests cover hero ordering, columns, sequential regions, readable labels, touch targets, destinations, keyboard navigation and session sound preferences. Phase 3 adds unit tests for progression, replay, wallet, thresholds, attempts, overflow, sanitization, persistence and store reset. Production-browser tests cover locked/invalid routes, replay, no attempts on visits, refresh/reopen, corrupt/denied storage, real cross-tab events, reset focus/cancel/confirmation and completed maps/GameShell/dialogs at all 12 target widths plus phone landscape. Test-generated progression fixtures exercise the real engine; they are outside the production bundle. Type checking includes source and tests, with strict mode enabled.
 
 Phase 4 adds pure session/content/scoring/reward tests and production-browser tests for the real five-level journey, replay improvement and lower scores, first-completion rewards, refresh/Back attempts, reset, keyboard input locks, counting object rendering, live feedback, reduced motion, responsive choice geometry and completion actions. Tests derive answers from the visible task and content mapping rather than requiring lucky randomness or production bypasses. Local visual screenshots remain ignored.
+
+Phase 4.1 adds audio preference/manager/synthesis unit coverage and mocked browser-audio tests for gesture activation, accepted-event SFX, blocked playback, music visibility/navigation cleanup, reload without autoplay, result sequencing, replay reward suppression and reduced motion. Gameplay geometry covers all five games at 320×568, 360×640, 375×667, 390×844, 414×896, 430×932, 360×560, all tablet/desktop target widths and 667×375, 740×360, 844×390 landscape. Tests require no speakers.
