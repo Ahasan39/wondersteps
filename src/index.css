@@ -123,6 +123,8 @@ h2 { font-size:var(--text-heading); letter-spacing:-.7px; margin-top:8px; }.text
 }
 
 /* World 1: the current question is the focus, with compact phone controls. */
+.footer-credit { width:100%; text-align:center; line-height:1.6; }
+.footer-credit a { color:var(--primary-dark); text-decoration:underline; text-underline-offset:3px; }
 .play-route .page-container { padding-top:0; padding-bottom:28px; }
 .play-route .back-link { margin-bottom:8px; }
 .play-route .game-shell { max-width:780px; margin:0 auto; }

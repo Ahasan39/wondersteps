@@ -28,6 +28,6 @@ export function AppShell() {
       {pathname !== '/' && <Link className="back-link" to={pathname.startsWith('/play') || pathname.startsWith('/results') ? '/levels' : '/'}><ArrowLeft size={18}/> {pathname.startsWith('/play') || pathname.startsWith('/results') ? 'Back to levels' : 'Back home'}</Link>}
       <motion.div key={pathname} className="route-content" initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : 0.18 }}><Outlet/></motion.div>
     </main>
-    <footer className="app-footer"><Footprints size={15}/><span>Little steps. Wonderful discoveries.</span><span className="footer-phase">World 1 learning games · Phase 4</span></footer>
+    <footer className="app-footer"><Footprints size={15}/><span>Little steps. Wonderful discoveries.</span><span className="footer-phase">World 1 learning games · Phase 4</span><span className="footer-credit">Design and Developed by <a href="https://ahasan39.github.io/"><strong>Ahasan39</strong></a></span></footer>
   </div>
 }
