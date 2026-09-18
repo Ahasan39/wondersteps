@@ -14,7 +14,7 @@ export function AppShell() {
   const reduced = useReducedMotion()
   const { totalStars, totalCoins } = useProgress()
   useEffect(() => { window.scrollTo(0, 0); main.current?.focus() }, [pathname])
-  return <div className="app-shell">
+  return <div className={pathname.startsWith('/play/') ? 'app-shell play-route' : 'app-shell'}>
     <a className="skip-link" href="#main" onClick={event => { event.preventDefault(); main.current?.focus() }}>Skip to content</a>
     <header className="game-header">
       <Link to="/" className="brand" aria-label="WonderSteps home"><span className="brand-icon"><Footprints size={25}/></span><span>Wonder<span className="brand-accent">Steps</span></span></Link>
@@ -28,6 +28,6 @@ export function AppShell() {
       {pathname !== '/' && <Link className="back-link" to={pathname.startsWith('/play') || pathname.startsWith('/results') ? '/levels' : '/'}><ArrowLeft size={18}/> {pathname.startsWith('/play') || pathname.startsWith('/results') ? 'Back to levels' : 'Back home'}</Link>}
       <motion.div key={pathname} className="route-content" initial={reduced ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : 0.18 }}><Outlet/></motion.div>
     </main>
-    <footer className="app-footer"><Footprints size={15}/><span>Little steps. Wonderful discoveries.</span><span className="footer-phase">Adventure preview · Phase 3</span></footer>
+    <footer className="app-footer"><Footprints size={15}/><span>Little steps. Wonderful discoveries.</span><span className="footer-phase">World 1 learning games · Phase 4</span></footer>
   </div>
 }

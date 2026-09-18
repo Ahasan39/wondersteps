@@ -9,7 +9,7 @@ export function useProgress() {
   return {
     progress, persistence, totalStars: getTotalStars(progress), totalCoins: progress.coins,
     currentLevel: getCurrentLevel(progress), highestUnlockedLevel: getHighestUnlockedLevel(progress),
-    getLevelProgress: (id: number) => getLevelProgress(progress, id),
+    getLevelProgress: (id: number) => getLevelProgress(store.getSnapshot().progress, id),
     isLevelUnlocked: (id: number) => isLevelUnlocked(progress, id),
     isLevelCompleted: (id: number) => getLevelProgress(progress, id)?.completed ?? false,
     getLevelStars: (id: number) => getLevelProgress(progress, id)?.stars ?? 0,
