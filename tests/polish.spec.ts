@@ -5,13 +5,18 @@ import { createInitialProgress,completeLevel } from '../src/engine/progressEngin
 import { alphabet } from '../src/games/alphabet-match/content.ts'
 
 interface AudioTrace {created:number;resumed:number;suspended:number;gains:number;notes:{bus:number;pitch:number}[]}
-async function mockAudio(page:Page,{reject=false,enabled=true}={}){
- await page.addInitScript(({reject,enabled,key})=>{
-  if(enabled&&!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify({version:1,musicEnabled:true,sfxEnabled:true}))
-  const trace:AudioTrace={created:0,resumed:0,suspended:0,gains:0,notes:[]}
+interface SpeechTrace {spoken:string[];cancels:number}
+async function mockAudio(page:Page,{reject=false,enabled=true,speechSupported=true}={}){
+ await page.addInitScript(({reject,enabled,key,speechSupported})=>{
+  if(enabled&&!localStorage.getItem(key))localStorage.setItem(key,JSON.stringify({version:1,musicEnabled:true,sfxEnabled:true,voiceEnabled:true}))
+ const trace:AudioTrace={created:0,resumed:0,suspended:0,gains:0,notes:[]}
   ;(window as unknown as {audioTrace:AudioTrace}).audioTrace=trace
+  const speechTrace:SpeechTrace={spoken:[],cancels:0};(window as unknown as {speechTrace:SpeechTrace}).speechTrace=speechTrace
+  class Utterance {text:string;lang='';rate=1;pitch=1;volume=1;voice:SpeechSynthesisVoice|null=null;onstart:((event:Event)=>void)|null=null;onend:((event:Event)=>void)|null=null;onerror:((event:Event)=>void)|null=null;constructor(text:string){this.text=text}}
+  const speech={getVoices:()=>[{lang:'en-US',localService:true,name:'Test voice',voiceURI:'test',default:true}],speak:(utterance:Utterance)=>{speechTrace.spoken.push(utterance.text);utterance.onstart?.(new Event('start'));window.setTimeout(()=>utterance.onend?.(new Event('end')),30)},cancel:()=>{speechTrace.cancels++},addEventListener:()=>{},removeEventListener:()=>{}}
+  Object.defineProperty(window,'SpeechSynthesisUtterance',{configurable:true,value:speechSupported?Utterance:undefined});Object.defineProperty(window,'speechSynthesis',{configurable:true,value:speechSupported?speech:undefined})
   class Gain{
-   gain={value:1,setValueAtTime:()=>{},linearRampToValueAtTime:()=>{},exponentialRampToValueAtTime:()=>{}}
+   gain={value:1,cancelScheduledValues:()=>{},setValueAtTime:(value:number)=>{this.gain.value=value},linearRampToValueAtTime:(value:number)=>{this.gain.value=value},exponentialRampToValueAtTime:()=>{}}
    target:Gain|object|null=null
    connect(target:Gain|object){this.target=target}
    disconnect(){this.target=null}
@@ -38,11 +43,12 @@ async function mockAudio(page:Page,{reject=false,enabled=true}={}){
    createOscillator(){return new Oscillator()}
   }
   window.AudioContext=Context as unknown as typeof AudioContext
- },{reject,enabled,key:AUDIO_PREFERENCES_KEY})
+ },{reject,enabled,key:AUDIO_PREFERENCES_KEY,speechSupported})
 }
 async function trace(page:Page){return page.evaluate(()=>(window as unknown as {audioTrace:AudioTrace}).audioTrace)}
 const sfx=(value:AudioTrace)=>value.notes.filter(note=>note.bus===.55)
-const music=(value:AudioTrace)=>value.notes.filter(note=>note.bus===.25)
+const music=(value:AudioTrace)=>value.notes.filter(note=>note.bus===.34||note.bus===.12)
+async function speech(page:Page){return page.evaluate(()=>(window as unknown as {speechTrace:SpeechTrace}).speechTrace)}
 function captureErrors(page:Page){
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error')errors.push(message.text())});return errors
 }
@@ -84,7 +90,7 @@ test('audio is idle on load, activates once after Start, reacts to accepted answ
  const stopped=music(await trace(page)).length;await page.waitForTimeout(350);expect(music(await trace(page)).length).toBe(stopped)
  await expect(page.getByRole('link',{name:'Ahasan39',exact:true})).toBeVisible();expect(errors).toEqual([])
 })
-test('Music and SFX persist independently, master mute works and reload never autoplays',async({page})=>{
+test('Music, SFX and voice persist independently, master mute works and reload never autoplays',async({page})=>{
  await mockAudio(page,{enabled:false});const errors=captureErrors(page)
  await page.goto('/wondersteps/#/settings');expect((await trace(page)).created).toBe(0)
  await page.getByRole('button',{name:'Enable music',exact:true}).click()
@@ -94,18 +100,18 @@ test('Music and SFX persist independently, master mute works and reload never au
  await expect(page.getByRole('button',{name:'Disable music',exact:true})).toBeVisible()
  await page.getByRole('button',{name:'Enable sound effects',exact:true}).click()
  await page.getByRole('button',{name:'Disable music',exact:true}).click()
- expect(await page.evaluate(key=>JSON.parse(localStorage.getItem(key)!),AUDIO_PREFERENCES_KEY)).toEqual({version:1,musicEnabled:false,sfxEnabled:true})
+ expect(await page.evaluate(key=>JSON.parse(localStorage.getItem(key)!),AUDIO_PREFERENCES_KEY)).toEqual({version:1,musicEnabled:false,sfxEnabled:true,voiceEnabled:true})
  await page.getByRole('button',{name:'Turn sound preference off'}).click()
- expect(await page.evaluate(key=>JSON.parse(localStorage.getItem(key)!),AUDIO_PREFERENCES_KEY)).toEqual({version:1,musicEnabled:false,sfxEnabled:false})
+ expect(await page.evaluate(key=>JSON.parse(localStorage.getItem(key)!),AUDIO_PREFERENCES_KEY)).toEqual({version:1,musicEnabled:false,sfxEnabled:false,voiceEnabled:false})
  await page.getByRole('button',{name:'Turn sound preference on'}).click()
- expect(await page.evaluate(key=>JSON.parse(localStorage.getItem(key)!),AUDIO_PREFERENCES_KEY)).toEqual({version:1,musicEnabled:true,sfxEnabled:true})
+ expect(await page.evaluate(key=>JSON.parse(localStorage.getItem(key)!),AUDIO_PREFERENCES_KEY)).toEqual({version:1,musicEnabled:true,sfxEnabled:true,voiceEnabled:true})
  await page.reload();expect((await trace(page)).created).toBe(0);expect(errors).toEqual([])
 })
 test('blocked audio promises and malformed preferences cannot interrupt gameplay',async({page})=>{
  await mockAudio(page,{reject:true})
  await page.addInitScript(key=>localStorage.setItem(key,'broken'),AUDIO_PREFERENCES_KEY)
  const errors=captureErrors(page);await page.emulateMedia({reducedMotion:'reduce'})
- await page.goto('/wondersteps/#/play/1');await page.getByRole('button',{name:'Turn sound preference on'}).click()
+ await page.goto('/wondersteps/#/play/1');await page.getByRole('button',{name:'Turn sound preference off'}).click();await page.getByRole('button',{name:'Turn sound preference on'}).click()
  await page.getByRole('button',{name:'Start',exact:true}).click()
  await page.getByRole('button',{name:(await page.locator('.prompt-word').innerText()).trim(),exact:true}).click()
  await expect(page.getByText('Round 2 / 10',{exact:true})).toBeVisible()
@@ -129,6 +135,32 @@ test('results reveal earned stars, actual coins and one-time unlock; replay and 
  const replay=await trace(page);expect(countPitch(replay,coinPitch)).toBe(1);expect(countPitch(replay,unlockPitch)).toBe(1)
  expect(await page.evaluate(key=>JSON.parse(localStorage.getItem(key)!).coins,PROGRESS_KEY)).toBe(75)
  await page.screenshot({path:'artifacts/phase41-result-mobile.png',fullPage:true,animations:'disabled'});expect(errors).toEqual([])
+})
+test('all five games speak current prompts once, Hear Again repeats, and feedback voice respects its toggle',async({page})=>{
+ await mockAudio(page);const errors=captureErrors(page)
+ let progress=createInitialProgress();for(let id=1;id<=4;id++){const result=completeLevel(progress,{levelId:id,score:1100,stars:3,coinsEarned:75});if(!result.ok)throw Error(result.error);progress=result.value}
+ await page.addInitScript(({key,progress})=>localStorage.setItem(key,JSON.stringify(progress)),{key:PROGRESS_KEY,progress})
+ for(let id=1;id<=5;id++){
+  await page.goto('/wondersteps/#/play/'+id);const before=(await speech(page)).spoken.length
+  await page.getByRole('button',{name:'Start',exact:true}).click();await expect(page.locator('.choice-grid')).toBeVisible()
+  let expected=''
+  if(id===1)expected='Find the color '+(await page.locator('.prompt-word').innerText()).trim()+'.'
+  if(id===2){const label=await page.locator('.count-group').getAttribute('aria-label');const visual=label!.split(' ')[1];expected='How many '+(visual==='star'?'stars':visual==='apple'?'apples':'flowers')+' can you count?'}
+  if(id===3)expected='Which one starts with '+(await page.locator('.prompt-letter').innerText()).trim()+'?'
+  if(id>=4)expected='Find the '+(await page.locator('.prompt-word').innerText()).trim()+'.'
+  await expect.poll(async()=>(await speech(page)).spoken.filter(text=>text===expected).length).toBe(1)
+  await page.getByRole('button',{name:'Hear question again'}).click();await expect.poll(async()=>(await speech(page)).spoken.filter(text=>text===expected).length).toBe(2)
+  let correct:string;if(id===2)correct=String(await page.locator('.count-object').count());else if(id===3){const letter=await page.locator('.prompt-letter').innerText();correct=alphabet.find(item=>item.letter===letter)!.choice.label}else correct=(await page.locator('.prompt-word').innerText()).trim()
+  const labels=await page.locator('.answer-card').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('aria-label')!));await page.getByRole('button',{name:labels.find(label=>label!==correct)!,exact:true}).click()
+  await expect.poll(async()=>['Try again!','Almost!','Oops, try again!','You can do it!','One more try!'].includes((await speech(page)).spoken.at(-1)!)).toBe(true)
+  await page.getByRole('button',{name:correct,exact:true}).click();await expect.poll(async()=>(await speech(page)).spoken.some(text=>['Great job!','Awesome!','Well done!','Excellent!','You got it!','Nice work!'].includes(text))).toBe(true)
+  expect((await speech(page)).spoken.length).toBeGreaterThan(before)
+ }
+ await page.goto('/wondersteps/#/settings');await page.getByRole('button',{name:'Disable voice guidance'}).click();const beforeOff=(await speech(page)).spoken.length
+ await page.goto('/wondersteps/#/play/1');await page.getByRole('button',{name:'Start',exact:true}).click();await page.waitForTimeout(100);expect((await speech(page)).spoken.length).toBe(beforeOff);expect(errors).toEqual([])
+})
+test('gameplay remains complete when browser speech synthesis is unavailable',async({page})=>{
+ await mockAudio(page,{enabled:false,speechSupported:false});const errors=captureErrors(page);await page.goto('/wondersteps/#/play/1');await page.getByRole('button',{name:'Start',exact:true}).click();await page.getByRole('button',{name:(await page.locator('.prompt-word').innerText()).trim(),exact:true}).click();await expect(page.getByText('Round 2 / 10',{exact:true})).toBeVisible();expect(errors).toEqual([])
 })
 test('all five games have usable HUD, Pip, feedback and choices on portrait, short phones and three landscapes',async({page})=>{
  await mockAudio(page,{enabled:false});const errors=captureErrors(page)

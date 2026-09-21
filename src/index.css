@@ -246,6 +246,10 @@ h2 { font-size:var(--text-heading); letter-spacing:-.7px; margin-top:8px; }.text
 .pip-companion .round-feedback { margin:0; min-height:36px; max-width:310px; display:flex; align-items:center; text-align:left; }
 .round-challenge { position:relative; }
 .answer-card { touch-action:manipulation; user-select:none; -webkit-user-select:none; }
+.round-challenge { position:relative; }
+.question-tools { position:absolute; z-index:2; top:0; right:0; }
+.hear-again { width:44px; height:44px; display:grid; place-items:center; border:0; border-radius:14px; color:var(--primary); background:var(--primary-soft); cursor:pointer; }
+.hear-again:hover { background:var(--primary-pale); }
 .answer-card.answer-correct { box-shadow:0 4px 0 var(--success),0 0 0 3px #39785515; }
 .game-sparkles { position:absolute; top:35%; left:50%; pointer-events:none; width:0; height:0; z-index:1; }
 .game-spark { position:absolute; color:var(--accent-dark); }

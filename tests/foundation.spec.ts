@@ -23,6 +23,7 @@ await page.getByRole('link', { name: 'Level 1: Color Match, current' }).click()
 await expect(page.getByRole('heading', { name: 'Color Match' })).toBeVisible()
 await expect(page.getByRole('button', { name: 'Start', exact: true })).toBeVisible()
 await page.goto('/wondersteps/#/settings')
+await page.getByRole('button', { name: 'On', exact: true }).click()
 await page.getByRole('button', { name: 'Off', exact: true }).click()
 await expect(page.getByRole('button', { name: 'On', exact: true })).toHaveAttribute('aria-pressed', 'true')
 await page.reload()
@@ -103,6 +104,7 @@ test('home destinations, back navigation and session preference', async ({ page 
     }
   }
   await page.goto('/wondersteps/#/settings')
+  await page.getByRole('button', { name: 'On', exact: true }).click()
   await page.getByRole('button', { name: 'Off', exact: true }).click()
   await page.getByRole('link', { name: 'Back home' }).click()
   await expect(page.getByRole('button', { name: 'Turn sound preference off' })).toHaveAttribute('aria-pressed', 'true')

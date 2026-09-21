@@ -75,6 +75,7 @@ test('reset confirmation traps focus, cancels safely, resets persistently and pr
   const errors = errorsFor(page)
   await seed(page, completedProgress(2))
   await page.goto('/wondersteps/#/settings')
+  await page.getByRole('button', { name: 'On', exact: true }).click()
   await page.getByRole('button', { name: 'Off', exact: true }).click()
   const reset = page.getByRole('button', { name: 'Reset progress', exact: true })
   await reset.click()

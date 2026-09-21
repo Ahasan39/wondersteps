@@ -8,7 +8,7 @@ import { ResetProgress } from '../components/game/ResetProgress'
 export default function Placeholder() {
   const { pathname } = useLocation()
   const { levelId } = useParams()
-  const { soundEnabled,toggleSound,musicEnabled,sfxEnabled,toggleMusic,toggleSfx,preferencesPersisted } = usePreferences()
+  const { soundEnabled,toggleSound,musicEnabled,sfxEnabled,voiceEnabled,toggleMusic,toggleSfx,toggleVoice,preferencesPersisted } = usePreferences()
   const level = levels.find(item => String(item.id) === levelId)
   const isResults = pathname.startsWith('/results/')
   const isSettings = pathname === '/settings'
@@ -24,10 +24,11 @@ export default function Placeholder() {
       <Badge>{isSettings ? 'YOUR COZY CORNER' : isAchievements ? 'BIG SMILES FOR LITTLE MILESTONES' : isRewards ? 'A LITTLE MAGIC FOR PIP' : 'THE ADVENTURE IS GROWING'}</Badge>
       <h1>{title}</h1><p>{description}</p>
       {(isAchievements || isRewards) && <div className="empty-state-note">{isAchievements ? 'No achievements earned yet' : 'No treasures collected yet'}<small>Your adventure is still at the beginning.</small></div>}
-      {isSettings && <><div className="preference-row"><span><strong>All audio</strong><small>Music and sound effects · saved on this device</small></span><button className="sound-switch" aria-pressed={soundEnabled} onClick={toggleSound}>{soundEnabled ? <Volume2 size={20}/> : <VolumeX size={20}/>} {soundEnabled ? 'On' : 'Off'}</button></div>
+      {isSettings && <><div className="preference-row"><span><strong>All audio</strong><small>Music, effects and voice · saved on this device</small></span><button className="sound-switch" aria-pressed={soundEnabled} onClick={toggleSound}>{soundEnabled ? <Volume2 size={20}/> : <VolumeX size={20}/>} {soundEnabled ? 'On' : 'Off'}</button></div>
       <div className="preference-row"><span><strong>Music</strong><small>Soft adventure melody during play</small></span><button className="sound-switch" aria-label={musicEnabled?'Disable music':'Enable music'} aria-pressed={musicEnabled} onClick={toggleMusic}>{musicEnabled?'On':'Off'}</button></div>
       <div className="preference-row"><span><strong>Sound effects</strong><small>Gentle taps, answers and celebrations</small></span><button className="sound-switch" aria-label={sfxEnabled?'Disable sound effects':'Enable sound effects'} aria-pressed={sfxEnabled} onClick={toggleSfx}>{sfxEnabled?'On':'Off'}</button></div>
-      <p className="audio-note">Audio begins after a tap. Music stays quieter than sound effects.</p>{!preferencesPersisted&&<p role="status">Audio settings work for this visit, but your browser could not save them.</p>}
+      <div className="preference-row"><span><strong>Voice guidance</strong><small>Reads questions and gives short encouragement</small></span><button className="sound-switch" aria-label={voiceEnabled?'Disable voice guidance':'Enable voice guidance'} aria-pressed={voiceEnabled} onClick={toggleVoice}>{voiceEnabled?'On':'Off'}</button></div>
+      <p className="audio-note">Audio begins after a tap. Music lowers gently while guidance speaks.</p>{!preferencesPersisted&&<p role="status">Audio settings work for this visit, but your browser could not save them.</p>}
       <div className="motion-note"><Sparkles size={18}/><span>Animations follow your device’s reduced-motion setting.</span></div></>}
       <ButtonLink to={adventureDestination ? '/levels' : '/'}><Compass size={20}/>{adventureDestination ? 'Back to adventure' : 'Back to home'}</ButtonLink>
       {isAchievements && <ButtonLink to="/rewards" secondary><Gift size={20}/> Visit rewards</ButtonLink>}

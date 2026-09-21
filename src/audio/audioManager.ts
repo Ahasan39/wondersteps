@@ -14,12 +14,13 @@ const browserDependencies:AudioDependencies={
 /** One context, one lazy synth and one music loop. All failures are optional audio failures. */
 export function createAudioManager(dependencies:AudioDependencies=browserDependencies){
  let context:AudioContext|null=null,synth:AudioSynth|null=null,loading:Promise<void>|null=null
- let preferences={...defaultAudioPreferences},activated=false,hidden=false,wantsMusic=false,disposed=false
+ let preferences={...defaultAudioPreferences},activated=false,hidden=false,wantsMusic=false,voiceActive=false,disposed=false
  let pending:AudioEvent[]=[]
  const safe=(operation:()=>void)=>{try{operation()}catch{/* Unsupported audio never affects gameplay. */}}
  function sync(){
   if(!synth)return
   safe(()=>{
+   synth!.setDucked(voiceActive)
    if(!disposed&&!hidden&&activated&&preferences.musicEnabled&&wantsMusic&&context?.state==='running')synth!.startMusic()
    else synth!.stopMusic()
    if(hidden||!preferences.sfxEnabled||context?.state!=='running')synth!.stopEffects()
@@ -68,6 +69,7 @@ export function createAudioManager(dependencies:AudioDependencies=browserDepende
   },
   startGame(){wantsMusic=true;void manager.activate();manager.emit('gameStart')},
   endGame(){wantsMusic=false;pending=[];sync();safe(()=>synth?.stopEffects())},
+  setVoiceActive(value:boolean){voiceActive=value;sync()},
   emit(event:AudioEvent){
    if(disposed||hidden||!activated||!preferences.sfxEnabled)return
    if(synth&&context?.state==='running')safe(()=>synth!.play(event))

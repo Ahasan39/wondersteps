@@ -15,7 +15,8 @@ const phrases:Record<AudioEvent,readonly number[]>={
 const hz=(midi:number)=>440*2**((midi-69)/12)
 export function createAudioSynth(context:AudioContext):AudioSynth{
  const music=context.createGain(),effects=context.createGain()
- music.gain.value=.25;effects.gain.value=.55
+ const normalMusicGain=.34,duckedMusicGain=.12
+ music.gain.value=normalMusicGain;effects.gain.value=.55
  music.connect(context.destination);effects.connect(context.destination)
  const musicVoices=new Set<OscillatorNode>(),effectVoices=new Set<OscillatorNode>()
  let timer:ReturnType<typeof setInterval>|null=null,step=0,nextAt=0
@@ -53,6 +54,10 @@ export function createAudioSynth(context:AudioContext):AudioSynth{
  return {
   startMusic(){if(timer!==null)return;step=0;nextAt=context.currentTime+.04;pump();timer=setInterval(pump,100)},
   stopMusic(){if(timer!==null)clearInterval(timer);timer=null;silence(musicVoices)},
+  setDucked(value){
+   const now=context.currentTime,target=value?duckedMusicGain:normalMusicGain
+   music.gain.cancelScheduledValues(now);music.gain.setValueAtTime(music.gain.value,now);music.gain.linearRampToValueAtTime(target,now+(value?.12:.22))
+  },
   play(event){
    const pitches=phrases[event],quiet=event==='buttonTap'||event==='incorrect'
    pitches.forEach((pitch,index)=>note(pitch,context.currentTime+.005+index*(event==='levelComplete'?.13:.075),event==='buttonTap'?.07:quiet?.18:.3,quiet?.07:.16,effects))
