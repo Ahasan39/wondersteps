@@ -1,9 +1,9 @@
 # WonderSteps
 **Phase 1: Foundation & Design System**
 
-**Current phase: Phase 5 — World 2: Magic Forest**
+**Current phase: Phase 6 — World 3: Cloud Kingdom**
 
-Phase 2 added the illustrated adventure entrance and responsive world environments. Phase 3 added the reusable progression engine, safe browser persistence, protected play routes and confirmed progress reset. Phase 4 integrated five real World 1 games. Phase 4.1 polished their audio, reactions and mobile presentation. Phase 4.1.1 adds lightweight voice guidance and rebalances the music without changing educational content, scoring or progression.
+Phase 2 added the illustrated adventure entrance and responsive world environments. Phase 3 added the reusable progression engine, safe browser persistence, protected play routes and confirmed progress reset. Phase 4 integrated five real World 1 games. Phase 4.1 polished their audio, reactions and mobile presentation. Phase 4.1.1 added lightweight voice guidance. Phase 5 added Magic Forest, and Phase 6 adds five Cloud Kingdom learning games.
 
 A fully static, responsive educational game foundation for curious children ages 4–8. The visual identity combines friendly violet, sky blue, warm gold, rounded surfaces, and Pip, an original inline-SVG mascot.
 
@@ -55,7 +55,7 @@ Browser checks cover 320, 360, 375, 390, 414, 430, 480, 768, 1024, 1280, 1440 an
 ## Routes
 Hash-based routes work on static GitHub Pages without server rewrites:
 `/`, `/levels`, `/play/:levelId`, `/results/:levelId`, `/achievements`, `/rewards`, `/settings`.
-An unknown-route screen provides a way home. Home Play, Explore and Start journey lead to Levels. Unlocked Levels 1–10 open a game intro and Start button; Levels 11–20 retain their coming-soon stage. Invalid/noncanonical IDs and locked play routes redirect to Levels with replacement navigation. Completed levels remain accessible for replay. Page visits never record attempts or completion. Real completion results appear inside the play route; the separate results route, achievements and rewards remain future-system empty states. Music/SFX/voice controls persist independently. Animations follow the device reduced-motion preference and page entrances take 180ms.
+An unknown-route screen provides a way home. Home Play, Explore and Start journey lead to Levels. Unlocked Levels 1–15 open a game intro and Start button; Levels 16–20 retain their coming-soon stage. Invalid/noncanonical IDs and locked play routes redirect to Levels with replacement navigation. Completed levels remain accessible for replay. Page visits never record attempts or completion. Real completion results appear inside the play route; the separate results route, achievements and rewards remain future-system empty states. Music/SFX/voice controls persist independently. Animations follow the device reduced-motion preference and page entrances take 180ms.
 
 ## Planned adventure
 | World | Levels |
@@ -65,7 +65,7 @@ An unknown-route screen provides a way home. Home Play, Explore and Start journe
 | Cloud Kingdom | 11. Addition; 12. Subtraction; 13. Animal Home; 14. Food Sort; 15. Shape Puzzle |
 | Star Galaxy | 16. Missing Letter; 17. Missing Number; 18. Advanced Memory; 19. Speed Challenge; 20. Final Adventure |
 
-The winding journey supports current, locked and completed presentations. Only Level 1 is available initially; completing each level unlocks exactly the next. World 1 is playable; World 2–4 metadata remains a future plan.
+The winding journey supports current, locked and completed presentations. Only Level 1 is available initially; completing each level unlocks exactly the next. Worlds 1–3 are playable; World 4 remains a future plan.
 
 ## World 1 gameplay
 Levels 1–5 share a lightweight ephemeral session layer above the existing progression engine:
@@ -80,7 +80,7 @@ Start selects ten unique questions and shuffles choice order once. Counting, alp
 
 Each round awards 100 points on the first try, 70 on the second, or 40 on the third or later. Wrong answers never subtract points or advance the round. Every round must eventually be answered correctly. Ten first-try answers earn a 100-point perfect bonus: maximum 1100. World 1 metadata defines 500/750/950 as the one/two/three-star thresholds. A score below 500 earns zero stars but still completes and unlocks the next step.
 
-First completion pays 30/50/75 coins for one/two/three stars (zero coins for zero stars). The existing completion API enforces the one-time reward. Replay retains independent highest score and highest stars and never pays completion coins again, including improvement after an initial zero-coin completion. Results show actual session score/stars, performance, coins earned, saved bests, and a new-best indicator. Unlock messaging appears only on first completion. Levels 1–9 offer Next Level; Level 10 returns to Adventure after unlocking the coming-soon Cloud Kingdom.
+First completion pays 30/50/75 coins for one/two/three stars (zero coins for zero stars). The existing completion API enforces the one-time reward. Replay retains independent highest score and highest stars and never pays completion coins again, including improvement after an initial zero-coin completion. Results show actual session score/stars, performance, coins earned, saved bests, and a new-best indicator. Unlock messaging appears only on first completion. Levels 1–9 offer Next Level; Level 10 returns to Adventure after unlocking Cloud Kingdom.
 
 Start calls the existing attempt API exactly once. Back or refresh discards unfinished rounds, while the recorded attempt remains. Returning opens the intro and requires another Start. Transient questions, feedback, timers and score are never stored in PlayerProgress. Replay returns to the intro for a fresh attempt.
 
@@ -138,7 +138,7 @@ Vite retains `base: '/wondersteps/'`. HashRouter retains static-host-compatible 
 The `wondersteps.player-progress` storage key is unchanged. Localhost and GitHub Pages are separate browser origins, so production begins with its own fresh save; no environment reset or migration is performed.
 
 ## Intentionally deferred
-Levels 6–20 gameplay, memory boards, achievement unlocking, reward shop, backend, database, authentication, cloud sync and PWA/service workers remain unimplemented. Phase 5 has not started.
+Levels 16–20 gameplay, achievement unlocking, reward shop, backend, database, authentication, cloud sync and PWA/service workers remain unimplemented.
 
 ## Verification
 `npm run build` runs strict TypeScript checking before the production bundle. `npm run lint` checks source with Oxlint. Playwright tests the production preview under the configured repository base path, checks all routes across the widths above, verifies initial locks and sound preference behavior, tests reduced motion and keyboard skip navigation, and generates screenshots for visual inspection.
@@ -153,10 +153,18 @@ Phase 4.1.1 adds mocked speech tests for all five prompt semantics, one narratio
 
 ## World 2 gameplay
 
-Magic Forest extends the central game registry and existing progress/result contracts through Levels 6–10. Shape Match uses ten unique SVG/CSS shape questions and the established question session. Memory Cards uses six cards and three pairs with a locked two-card resolution state. Letter Hunt asks for three copies of a target among six distractors. Number Order uses tap-to-place four-number sequences. Mini Challenge mixes three shape, three letter, two number and two visual-memory rounds. Level 11 unlocks after the finale but remains a guarded coming-soon destination.
+Magic Forest extends the central game registry and existing progress/result contracts through Levels 6–10. Shape Match uses ten unique SVG/CSS shape questions and the established question session. Memory Cards uses six cards and three pairs with a locked two-card resolution state. Letter Hunt asks for three copies of a target among six distractors. Number Order uses tap-to-place four-number sequences. Mini Challenge mixes three shape, three letter, two number and two visual-memory rounds. Its finale unlocks playable Level 11.
 
 Shape Match and the ten-round special games score a clean round at 100, one-error completion at 70, and two-or-more-error completion at 40, with a 100-point perfect-session bonus. Memory starts at 1100 and subtracts 100 per mismatch with a 500-point floor. All use the unchanged 500/750/950 star thresholds and first-completion 30/50/75 coin policy. Replays preserve independent bests and cannot award coins again.
 
 World 2 content lives separately from interaction state machines. Randomization remains injectable in pure functions. Native buttons provide keyboard and screen-reader access; found, matched and ordered states have explicit names. Hear Again and browser-native voice reuse the central audio provider, while frequent card/letter taps avoid excessive narration. CSS forest surfaces, shapes and symbols add no image assets. Portrait uses large grids; short landscape separates Pip from the interaction grid; desktop caps the stage width. Reduced motion keeps every state readable without animation.
 
 Phase 5 keeps Home/Map code separate from the lazy GamePage route. Compared with Phase 4.1.1, initial main JS is 364.19 KB / 115.90 KB gzip (+0.02 KB gzip), gameplay is 54.39 / 18.57 KB (+2.73 KB gzip), CSS is 49.06 / 10.97 KB (+0.78 KB gzip), shared progress is 56.12 / 20.29 KB, and lazy audio remains 2.03 / 1.00 KB. No dependency or static asset was added. Lighthouse is not installed, so no score is claimed.
+
+## World 3 gameplay
+
+Cloud Kingdom adds five ten-round games through the existing lazy gameplay route. Addition joins two visual groups with totals no higher than ten. Subtraction crosses out the removed group and always produces a non-negative answer. Animal Home pairs ten familiar animals with suitable homes. Food Sort sends five fruits and five vegetables to two clearly labeled categories. Shape Puzzle asks children to fit one of four named shapes into a missing picture slot. Completing Level 15 unlocks Level 16, whose gameplay remains a coming-soon screen.
+
+All five games use the established 100/70/40 retry scoring, 100-point perfect bonus, 500/750/950 star thresholds and one-time 30/50/75 coin rewards. Questions and choices have text equivalents, native buttons, visible feedback, browser voice prompts and a Hear Again control. Cloud styling uses CSS and existing project visuals, adds no image or runtime dependency, honors reduced motion, and stays inside the existing phone, landscape, tablet and desktop layouts.
+
+Phase 6 keeps Cloud content in its own modules inside the already lazy GamePage chunk. The production bundle is 364.51 KB / 116.03 KB gzip for main JS, 58.71 / 19.79 KB for gameplay, 51.02 / 11.41 KB for CSS, 56.12 / 20.29 KB for shared progress, and 2.03 / 1.00 KB for lazy audio. Lighthouse is not installed, so no score is claimed.

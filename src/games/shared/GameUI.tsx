@@ -19,6 +19,10 @@ export function QuestionPrompt({ question }: { question: Question }) {
   <h2 ref={focus} tabIndex={-1}>{question.instruction}</h2>
   {prompt.kind === 'color' ? <strong className="prompt-word">{prompt.name}</strong>
    : prompt.kind==='shape'?<div className={'shape-icon shape-'+prompt.shape} aria-hidden="true"/>
+   : prompt.kind==='addition'||prompt.kind==='subtraction'?<div className="arithmetic-model" role="img" aria-label={`${prompt.left} ${prompt.kind==='addition'?'plus':'minus'} ${prompt.right}`}><span className="object-group">{Array.from({length:prompt.left},(_,i)=><Visual key={i} id={prompt.visual}/>)}</span><b>{prompt.kind==='addition'?'+':'−'}</b><span className={prompt.kind==='subtraction'?'object-group removed-group':'object-group'}>{Array.from({length:prompt.right},(_,i)=><Visual key={i} id={prompt.visual}/>)}</span></div>
+   : prompt.kind==='animal-home'?<div className="named-prompt"><Visual id={prompt.visual}/><strong className="prompt-word">{prompt.animal}</strong></div>
+   : prompt.kind==='food-sort'?<div className={'food-token food-'+prompt.food.toLowerCase()} aria-hidden="true">{prompt.food[0]}</div>
+   : prompt.kind==='puzzle'?<div className="puzzle-picture"><span>{prompt.picture}</span><span className="puzzle-hole">?</span></div>
    : prompt.kind === 'alphabet' ? <strong className="prompt-letter">{prompt.letter}</strong>
    : prompt.kind === 'count' ? <div className="count-group" role="img" aria-label={prompt.count + ' ' + prompt.visual + ' objects'} style={{ '--count-columns': Math.min(prompt.count, 5) } as React.CSSProperties}>
     {Array.from({ length: prompt.count }, (_, i) => <span className="count-object" key={i}><Visual id={prompt.visual}/></span>)}
@@ -35,6 +39,7 @@ export function AnswerCard({ choice, state, disabled, onAnswer }: { choice: Choi
   transition={{duration:reduced ? 0 : .35}}>
   {choice.color ? <span className={'color-swatch swatch-' + choice.color} aria-hidden="true"/>
    : choice.shape ? <span className={'shape-icon shape-'+choice.shape} aria-hidden="true"/>
+   : choice.symbol ? <span className={'choice-symbol symbol-'+choice.symbol} aria-hidden="true">{choice.symbol[0].toUpperCase()}</span>
    : choice.visual ? <Visual id={choice.visual}/> : <strong className="number-choice">{choice.number}</strong>}
   <span className="answer-label">{choice.label}</span>{state === 'correct' && <><motion.span className="answer-check" initial={reduced?false:{opacity:0,scale:.4}} animate={{opacity:1,scale:1}} transition={{duration:reduced?0:.2}}><Check size={20} aria-hidden="true"/></motion.span><GameSparkles/></>}
  </motion.button>

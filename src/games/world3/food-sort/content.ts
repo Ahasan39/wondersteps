@@ -1,0 +1,3 @@
+import type{GameDefinition}from'../../shared/types.ts'
+export const foods=[['apple','Fruit'],['banana','Fruit'],['orange','Fruit'],['strawberry','Fruit'],['grapes','Fruit'],['carrot','Vegetable'],['broccoli','Vegetable'],['corn','Vegetable'],['pepper','Vegetable'],['peas','Vegetable']] as const
+export const foodSort:GameDefinition={levelId:14,intro:'Send each food to the right cloud basket.',questions:foods.map(([food,category])=>({id:`food-${food}`,instruction:`Where does the ${food} belong?`,prompt:{kind:'food-sort',food,category},choices:[{id:'Fruit',label:'Fruit',symbol:'fruit'},{id:'Vegetable',label:'Vegetable',symbol:'vegetable'}],correctAnswerId:category}))}

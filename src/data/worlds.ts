@@ -7,4 +7,4 @@ export const worlds: World[] = [
 ]
 const names = ['Color Match', 'Count It', 'Alphabet Match', 'Animal Match', 'Fruit Match', 'Shape Match', 'Memory Cards', 'Letter Hunt', 'Number Order', 'Mini Challenge', 'Addition', 'Subtraction', 'Animal Home', 'Food Sort', 'Shape Puzzle', 'Missing Letter', 'Missing Number', 'Advanced Memory', 'Speed Challenge', 'Final Adventure']
 const standardThresholds = { one: 500, two: 750, three: 950 }
-export const levels: Level[] = names.map((name, index) => ({ id: index + 1, name, worldId: worlds[Math.floor(index / 5)].id, ...(index < 10 ? { starThresholds: standardThresholds } : {}) }))
+export const levels: Level[] = names.map((name, index) => ({ id: index + 1, name, worldId: worlds[Math.floor(index / 5)].id, ...(index < 15 ? { starThresholds: standardThresholds } : {}) }))

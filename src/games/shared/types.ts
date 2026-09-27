@@ -4,13 +4,18 @@ export type VisualId =
   | 'ball' | 'house' | 'ice-cream' | 'juice' | 'kite' | 'moon' | 'nest' | 'queen' | 'sun' | 'tree' | 'umbrella' | 'van' | 'xylophone' | 'yo-yo' | 'star' | 'flower' | 'circle'
 export type ColorId = 'red' | 'blue' | 'green' | 'yellow' | 'orange' | 'purple' | 'pink' | 'brown' | 'black' | 'white'
 export type ShapeId='circle'|'square'|'triangle'|'rectangle'|'star'|'heart'|'oval'|'diamond'|'pentagon'|'hexagon'
-export interface Choice { id: string; label: string; visual?: VisualId; color?: ColorId; number?: number; shape?:ShapeId }
+export interface Choice { id: string; label: string; visual?: VisualId; color?: ColorId; number?: number; shape?:ShapeId; symbol?:string }
 export type Prompt =
   | { kind: 'color'; name: string }
   | { kind: 'count'; count: number; visual: VisualId }
   | { kind: 'alphabet'; letter: string }
   | { kind: 'animal' | 'fruit'; name: string; visual: VisualId }
   | { kind:'shape'; name:string; shape:ShapeId }
+  | { kind:'addition'; left:number; right:number; visual:VisualId }
+  | { kind:'subtraction'; left:number; right:number; visual:VisualId }
+  | { kind:'animal-home'; animal:string; visual:VisualId }
+  | { kind:'food-sort'; food:string; category:'Fruit'|'Vegetable' }
+  | { kind:'puzzle'; picture:string; missing:ShapeId }
 export interface Question { id: string; instruction: string; prompt: Prompt; choices: readonly Choice[]; correctAnswerId: string }
 export interface GameDefinition { levelId: number; intro: string; questions: readonly Question[] }
 export type SessionStatus = 'playing' | 'round-feedback' | 'level-complete'

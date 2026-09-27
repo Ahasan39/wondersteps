@@ -1,0 +1,4 @@
+import type{GameDefinition,VisualId}from'../../shared/types.ts'
+const homes=[['bird','nest','bird'],['dog','doghouse','dog'],['rabbit','burrow','rabbit'],['fish','water','fish'],['frog','pond','frog'],['lion','den','lion'],['horse','stable','horse'],['duck','pond','duck'],['sheep','barn','sheep'],['cat','house','cat']] as const
+const options=['nest','doghouse','burrow','water','pond','den','stable','barn','house']
+export const animalHome:GameDefinition={levelId:13,intro:'Help each friendly animal find its home.',questions:homes.map(([animal,home,visual],i)=>{const values=[home,...options.filter(x=>x!==home).slice(i%6,i%6+3)];for(const x of options)if(values.length<4&&!values.includes(x))values.push(x);return{id:`home-${animal}`,instruction:`Where does the ${animal} live?`,prompt:{kind:'animal-home',animal,visual:visual as VisualId},choices:values.map(symbol=>({id:symbol,label:symbol[0].toUpperCase()+symbol.slice(1),symbol})),correctAnswerId:home}})}

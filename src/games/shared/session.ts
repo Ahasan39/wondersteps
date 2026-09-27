@@ -20,12 +20,16 @@ export function validateQuestions(questions: readonly Question[]): void {
   for (const question of questions) {
     if (!question.id || ids.has(question.id)) throw new Error('Question IDs must be unique')
     ids.add(question.id)
-    if (!question.instruction.trim() || question.choices.length < 3 || question.choices.length > 4) throw new Error('A question needs instructions and 3–4 choices')
+    if (!question.instruction.trim() || question.choices.length < 2 || question.choices.length > 4) throw new Error('A question needs instructions and 2–4 choices')
     const prompt = question.prompt
-    if (!prompt || !['color', 'count', 'alphabet', 'animal', 'fruit','shape'].includes(prompt.kind)) throw new Error('A valid prompt is required')
+    if (!prompt || !['color', 'count', 'alphabet', 'animal', 'fruit','shape','addition','subtraction','animal-home','food-sort','puzzle'].includes(prompt.kind)) throw new Error('A valid prompt is required')
     if (prompt.kind === 'count' ? !Number.isInteger(prompt.count) || prompt.count < 1 || prompt.count > 10 || !prompt.visual
       : prompt.kind === 'alphabet' ? !/^[A-Z]$/.test(prompt.letter)
       : prompt.kind==='shape' ? !prompt.name.trim()||!prompt.shape
+      : prompt.kind==='addition'||prompt.kind==='subtraction' ? !Number.isInteger(prompt.left)||!Number.isInteger(prompt.right)
+      : prompt.kind==='animal-home' ? !prompt.animal.trim()||!prompt.visual
+      : prompt.kind==='food-sort' ? !prompt.food.trim()
+      : prompt.kind==='puzzle' ? !prompt.picture.trim()||!prompt.missing
       : !prompt.name?.trim() || (prompt.kind !== 'color' && !prompt.visual)) throw new Error('Prompt content is required')
     const choiceIds = new Set(question.choices.map(choice => choice.id))
     if (choiceIds.size !== question.choices.length || question.choices.some(choice => !choice.id || !choice.label.trim())) throw new Error('Choice IDs and labels must be valid')

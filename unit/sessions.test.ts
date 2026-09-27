@@ -97,6 +97,11 @@ for(const definition of Object.values(gameRegistry)) test('content mappings for 
   else if(q.prompt.kind==='count'){assert.equal(correct.number,q.prompt.count);assert.ok(q.prompt.count>=1&&q.prompt.count<=10)}
   else if(q.prompt.kind==='alphabet'){assert.equal(correct.id,alphabet.find(a=>a.letter===(q.prompt as {letter:string}).letter)!.choice.id);assert.ok(correct.visual)}
   else if(q.prompt.kind==='shape'){assert.equal(correct.id,q.prompt.shape);assert.equal(correct.shape,q.prompt.shape)}
+  else if(q.prompt.kind==='addition'){assert.equal(correct.number,q.prompt.left+q.prompt.right)}
+  else if(q.prompt.kind==='subtraction'){assert.equal(correct.number,q.prompt.left-q.prompt.right)}
+  else if(q.prompt.kind==='animal-home'){assert.ok(correct.symbol);assert.match(q.instruction,new RegExp(q.prompt.animal,'i'))}
+  else if(q.prompt.kind==='food-sort'){assert.equal(correct.id,q.prompt.category)}
+  else if(q.prompt.kind==='puzzle'){assert.equal(correct.shape,q.prompt.missing)}
   else {assert.equal(correct.label,q.prompt.name);assert.equal(correct.visual,q.prompt.visual)}
  }
 })

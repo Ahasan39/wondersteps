@@ -7,7 +7,7 @@ import { StarDisplay } from './StarDisplay'
 export function GameShell({ level, world, progress, status, children }: {
   level: Level; world: World; progress: LevelProgress; status: GameStatus; children?: ReactNode
 }) {
-  return <section className="game-shell" aria-labelledby="game-title" data-game-status={status}>
+  return <section className={`game-shell world-${world.theme}`} aria-labelledby="game-title" data-game-status={status}>
     <header className="game-shell-header"><Badge>LEVEL {level.id} · {world.name}</Badge><h1 id="game-title">{level.name}</h1>
       {status === 'not-ready' && <p>{progress.completed ? 'A familiar step, ready to revisit.' : 'A new little discovery is on its way.'}</p>}
       {progress.completed && status !== 'playing' && status !== 'finished' && <div className="game-saved-result"><StarDisplay stars={progress.stars}/><span>Best score: {progress.bestScore}</span></div>}

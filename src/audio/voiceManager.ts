@@ -15,6 +15,11 @@ export function promptText(question:Question){
  if(prompt.kind==='count'){const noun=prompt.visual==='star'?'stars':prompt.visual==='apple'?'apples':'flowers';return `How many ${noun} can you count?`}
  if(prompt.kind==='alphabet')return `Which one starts with ${prompt.letter}?`
  if(prompt.kind==='shape')return `Find the ${prompt.name}.`
+ if(prompt.kind==='addition')return `What is ${prompt.left} plus ${prompt.right}?`
+ if(prompt.kind==='subtraction')return `${prompt.left} minus ${prompt.right}. How many are left?`
+ if(prompt.kind==='animal-home')return `Where does the ${prompt.animal} live?`
+ if(prompt.kind==='food-sort')return `Is the ${prompt.food} a fruit or a vegetable?`
+ if(prompt.kind==='puzzle')return 'Which piece fits here?'
  return `Find the ${prompt.name}.`
 }
 export function createVoiceManager({synthesis,createUtterance,onSpeakingChange,random=Math.random}:VoiceDependencies){
