@@ -21,6 +21,7 @@ export function World2Game({level,world}:{level:Level;world:World}){
  const {recordAttempt,completeLevel,getLevelProgress}=useProgress(),audio=useAudio(),saved=getLevelProgress(level.id)!
  const [started,setStarted]=useState(false),[outcome,setOutcome]=useState<SessionOutcome|null>(null),[error,setError]=useState(''),done=useRef(false)
  const [feedback,setFeedback]=useState(''),[score,setScore]=useState(0),[wrong,setWrong]=useState(0),[round,setRound]=useState(0)
+ const [totalWrong,setTotalWrong]=useState(0)
  const [memory,setMemory]=useState<MemoryState|null>(null),[hunt,setHunt]=useState<HuntState|null>(null),[order,setOrder]=useState<OrderState|null>(null)
  const instruction=level.id===8&&hunt?`Find all the letter ${hunt.target}'s.`:level.id===10?miniRounds[round]?.prompt??instructions[10]:instructions[level.id as 7|8|9|10]
  const finish=(finalScore:number,label='Challenges')=>{
@@ -30,7 +31,7 @@ export function World2Game({level,world}:{level:Level;world:World}){
   if(!result.ok)return setError('This step could not be saved. Please try again.')
   done.current=true;setOutcome({score:finalScore,stars:stars.value,coins,firstCompletion:!previous.completed,newBest:finalScore>previous.bestScore,improvedStars:stars.value>previous.stars,persisted:result.value.persisted});audio.emit('levelComplete');audio.speakLevelComplete();setFeedback(label)
  }
- const start=()=>{const attempt=recordAttempt(level.id);if(!attempt.ok)return setError('This step is not ready. Return to your adventure.');done.current=false;setStarted(true);setScore(0);setWrong(0);setRound(0);setFeedback('');audio.startGame();if(level.id===7)setMemory(createMemory());if(level.id===8)setHunt(createHunt(huntTargets[0]));if(level.id===9)setOrder(createOrder(orderStarts[0]))}
+ const start=()=>{const attempt=recordAttempt(level.id);if(!attempt.ok)return setError('This step is not ready. Return to your adventure.');done.current=false;setStarted(true);setScore(0);setWrong(0);setTotalWrong(0);setRound(0);setFeedback('');audio.startGame();if(level.id===7)setMemory(createMemory());if(level.id===8)setHunt(createHunt(huntTargets[0]));if(level.id===9)setOrder(createOrder(orderStarts[0]))}
  const replay=()=>{audio.endGame();setStarted(false);setOutcome(null);setError('');done.current=false}
  useEffect(()=>()=>audio.endGame(),[audio])
  useEffect(()=>{if(started&&!outcome&&instruction)audio.speakInstruction(instruction)},[audio,instruction,outcome,started])
@@ -40,7 +41,7 @@ export function World2Game({level,world}:{level:Level;world:World}){
  const chooseHunt=(id:string)=>{if(!hunt)return;const item=hunt.letters.find(x=>x.id===id),next=tapHunt(hunt,id);if(next===hunt)return;if(item?.letter!==hunt.target){audio.emit('incorrect');setFeedback('Look for '+hunt.target)}advanceHunt(next)}
  const advanceOrder=(next:OrderState)=>{if(next.placed.length<4)return setOrder(next);const earned=roundScore(next.wrong),newScore=score+earned,newWrong=wrong+next.wrong;audio.emit('correct');audio.speakCorrectPraise();if(round===9)return finish(finalTenRoundScore(newScore,newWrong));setScore(newScore);setWrong(newWrong);setRound(value=>value+1);setOrder(createOrder(orderStarts[round+1]));setFeedback('In order!')}
  const chooseOrder=(value:number)=>{if(!order)return;const next=tapOrder(order,value);if(next===order)return;if(next.wrong>order.wrong){audio.emit('incorrect');audio.speakRetryEncouragement();setFeedback('Try the smallest number next.')}advanceOrder(next)}
- const chooseMini=(answer:string)=>{const task=miniRounds[round];if(answer!==task.answer){setWrong(value=>value+1);audio.emit('incorrect');audio.speakRetryEncouragement();setFeedback('Almost! Try again.');return}const earned=roundScore(wrong),newScore=score+earned;audio.emit('correct');audio.speakCorrectPraise();if(round===9)return finish(finalTenRoundScore(newScore,wrong));setScore(newScore);setWrong(0);setRound(value=>value+1);setFeedback('Great job!')}
+ const chooseMini=(answer:string)=>{const task=miniRounds[round];if(answer!==task.answer){setWrong(value=>value+1);setTotalWrong(value=>value+1);audio.emit('incorrect');audio.speakRetryEncouragement();setFeedback('Almost! Try again.');return}const earned=roundScore(wrong),newScore=score+earned;audio.emit('correct');audio.speakCorrectPraise();if(round===9)return finish(finalTenRoundScore(newScore,totalWrong));setScore(newScore);setWrong(0);setRound(value=>value+1);setFeedback('Great job!')}
  const fake={correctAnswers:level.id===7?3:10,questions:Array.from({length:level.id===7?3:10},()=>({}))} as never
  return <GameShell level={level} world={world} progress={saved} status={!started?'ready':outcome?'finished':'playing'}>
   {!started?<div className="game-intro forest-intro"><Mascot/><h2>{intros[level.id as 7|8|9|10]}</h2><p>{level.id===7?'3 magical pairs':'10 little challenges'}</p><button data-game-start className="game-button" onClick={start}><Play size={20}/> Start</button><ButtonLink to="/levels" secondary><Compass size={20}/> Back to adventure</ButtonLink></div>
