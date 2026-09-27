@@ -19,7 +19,7 @@ function CoinCount({coins}:{coins:number}){
  },[coins,reduced,value])
  return <strong><span className="sr-only">+{coins}</span><motion.span aria-hidden="true">{displayed}</motion.span></strong>
 }
-export function LevelResult({level,saved,session,outcome,replay}:{level:Level;saved:LevelProgress;session:GameSession;outcome:SessionOutcome;replay:()=>void}){
+export function LevelResult({level,saved,session,outcome,replay,performanceLabel='Correct answers'}:{level:Level;saved:LevelProgress;session:Pick<GameSession,'correctAnswers'|'questions'>;outcome:SessionOutcome;replay:()=>void;performanceLabel?:string}){
  const reduced=useReducedMotion()
  const audio=useAudio()
  const heading=useRef<HTMLHeadingElement>(null)
@@ -37,12 +37,12 @@ export function LevelResult({level,saved,session,outcome,replay}:{level:Level;sa
   <div className="result-pip"><Mascot state="celebrating"/><GameSparkles celebration/></div>
   <h2 id="result-title" tabIndex={-1} ref={heading}>Level Complete!</h2><p className="result-encouragement">You did it! Every little challenge is complete.</p>
   <span className="star-display result-stars" role="img" aria-label={outcome.stars+' of 3 stars'}>{[1,2,3].map(star=>star<=outcome.stars?<motion.span key={star} initial={reduced?false:{opacity:0,scale:.4,y:8}} animate={{opacity:1,scale:reduced?1:[.4,1.16,1],y:0}} transition={{duration:reduced?0:.35,delay:reduced?0:.2+(star-1)*.22}}><Star className="earned-star" aria-hidden="true"/></motion.span>:<span key={star}><Star className="empty-star" aria-hidden="true"/></span>)}</span>
-  <div className="result-stats"><span>Final score <strong>{outcome.score}</strong></span><span>Correct answers <strong>{session.correctAnswers} / {session.questions.length}</strong></span>
+  <div className="result-stats"><span>Final score <strong>{outcome.score}</strong></span><span>{performanceLabel} <strong>{session.correctAnswers} / {session.questions.length}</strong></span>
    <motion.span className="coin-reward" initial={false} animate={outcome.coins>0&&!reduced?{scale:[1,1.04,1]}:{scale:1}} transition={{delay:.75,duration:.35}}><span><Coins size={18} aria-hidden="true"/> Coins earned</span>{outcome.coins>0?<CoinCount coins={outcome.coins}/>:<strong>+0</strong>}</motion.span></div>
   <div className="result-best"><p className="new-best">{outcome.newBest?'New best!':'Keep exploring. Every try is a little victory.'}</p><p className="saved-best">Saved best: {saved.bestScore} points · {saved.stars} stars</p></div>
-  <div className="result-unlock">{outcome.firstCompletion&&<motion.p className="unlock-message" initial={reduced?false:{opacity:0,scale:.96}} animate={{opacity:1,scale:1}} transition={{delay:reduced?0:1.1,duration:reduced?0:.3}}><Unlock size={18} aria-hidden="true"/>{level.id<5?'Level '+(level.id+1)+' Unlocked!':'World 1 complete! Level 6 is unlocked and coming soon.'}</motion.p>}</div>
+  <div className="result-unlock">{outcome.firstCompletion&&<motion.p className="unlock-message" initial={reduced?false:{opacity:0,scale:.96}} animate={{opacity:1,scale:1}} transition={{delay:reduced?0:1.1,duration:reduced?0:.3}}><Unlock size={18} aria-hidden="true"/>{level.id===10?'Cloud Kingdom unlocked!':'Level '+(level.id+1)+' Unlocked!'}</motion.p>}</div>
   {!outcome.persisted&&<p role="status">Progress is saved for this visit. Browser storage is unavailable.</p>}
-  <div className="result-actions">{level.id<5?<ButtonLink to={'/play/'+(level.id+1)}><ArrowRight size={20}/> Next Level</ButtonLink>:<ButtonLink to="/levels"><Compass size={20}/> Back to Adventure</ButtonLink>}
+  <div className="result-actions">{level.id<10?<ButtonLink to={'/play/'+(level.id+1)}><ArrowRight size={20}/> Next Level</ButtonLink>:<ButtonLink to="/levels"><Compass size={20}/> Back to Adventure</ButtonLink>}
    <button className="game-button secondary" onClick={replay}><RotateCcw size={20} aria-hidden="true"/> Replay Level</button><ButtonLink to="/levels" secondary><Compass size={20}/> Level Map</ButtonLink></div>
  </motion.div>
 }

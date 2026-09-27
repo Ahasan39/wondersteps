@@ -18,6 +18,7 @@ export function QuestionPrompt({ question }: { question: Question }) {
  return <div className={'question-prompt prompt-' + prompt.kind}>
   <h2 ref={focus} tabIndex={-1}>{question.instruction}</h2>
   {prompt.kind === 'color' ? <strong className="prompt-word">{prompt.name}</strong>
+   : prompt.kind==='shape'?<div className={'shape-icon shape-'+prompt.shape} aria-hidden="true"/>
    : prompt.kind === 'alphabet' ? <strong className="prompt-letter">{prompt.letter}</strong>
    : prompt.kind === 'count' ? <div className="count-group" role="img" aria-label={prompt.count + ' ' + prompt.visual + ' objects'} style={{ '--count-columns': Math.min(prompt.count, 5) } as React.CSSProperties}>
     {Array.from({ length: prompt.count }, (_, i) => <span className="count-object" key={i}><Visual id={prompt.visual}/></span>)}
@@ -33,6 +34,7 @@ export function AnswerCard({ choice, state, disabled, onAnswer }: { choice: Choi
   animate={reduced ? {} : state === 'correct' ? {scale:[1,1.055,1]} : state === 'incorrect' ? {x:[0,-3,3,0]} : {scale:1,x:0}}
   transition={{duration:reduced ? 0 : .35}}>
   {choice.color ? <span className={'color-swatch swatch-' + choice.color} aria-hidden="true"/>
+   : choice.shape ? <span className={'shape-icon shape-'+choice.shape} aria-hidden="true"/>
    : choice.visual ? <Visual id={choice.visual}/> : <strong className="number-choice">{choice.number}</strong>}
   <span className="answer-label">{choice.label}</span>{state === 'correct' && <><motion.span className="answer-check" initial={reduced?false:{opacity:0,scale:.4}} animate={{opacity:1,scale:1}} transition={{duration:reduced?0:.2}}><Check size={20} aria-hidden="true"/></motion.span><GameSparkles/></>}
  </motion.button>

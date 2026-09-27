@@ -3,12 +3,14 @@ export type VisualId =
   | 'cat' | 'dog' | 'lion' | 'tiger' | 'elephant' | 'rabbit' | 'panda' | 'monkey' | 'fish' | 'bird' | 'frog' | 'turtle' | 'horse' | 'cow' | 'sheep' | 'duck' | 'whale' | 'zebra'
   | 'ball' | 'house' | 'ice-cream' | 'juice' | 'kite' | 'moon' | 'nest' | 'queen' | 'sun' | 'tree' | 'umbrella' | 'van' | 'xylophone' | 'yo-yo' | 'star' | 'flower' | 'circle'
 export type ColorId = 'red' | 'blue' | 'green' | 'yellow' | 'orange' | 'purple' | 'pink' | 'brown' | 'black' | 'white'
-export interface Choice { id: string; label: string; visual?: VisualId; color?: ColorId; number?: number }
+export type ShapeId='circle'|'square'|'triangle'|'rectangle'|'star'|'heart'|'oval'|'diamond'|'pentagon'|'hexagon'
+export interface Choice { id: string; label: string; visual?: VisualId; color?: ColorId; number?: number; shape?:ShapeId }
 export type Prompt =
   | { kind: 'color'; name: string }
   | { kind: 'count'; count: number; visual: VisualId }
   | { kind: 'alphabet'; letter: string }
   | { kind: 'animal' | 'fruit'; name: string; visual: VisualId }
+  | { kind:'shape'; name:string; shape:ShapeId }
 export interface Question { id: string; instruction: string; prompt: Prompt; choices: readonly Choice[]; correctAnswerId: string }
 export interface GameDefinition { levelId: number; intro: string; questions: readonly Question[] }
 export type SessionStatus = 'playing' | 'round-feedback' | 'level-complete'

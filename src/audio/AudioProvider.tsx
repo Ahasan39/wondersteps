@@ -14,6 +14,7 @@ export function AudioProvider({children}:{children:ReactNode}){
   startGame:()=>{voice.current?.activate();manager.current?.startGame()},
   endGame:()=>{voice.current?.cancel();manager.current?.endGame()},
   speakPrompt:(question:Parameters<VoiceManager['speakPrompt']>[0])=>voice.current?.speakPrompt(question),
+  speakInstruction:(text:string)=>voice.current?.speakInstruction(text),
   speakCorrectPraise:()=>voice.current?.speakCorrectPraise(),speakRetryEncouragement:()=>voice.current?.speakRetryEncouragement(),
   speakLevelComplete:()=>voice.current?.speakLevelComplete(),cancelVoice:()=>voice.current?.cancel(),
  }),[])

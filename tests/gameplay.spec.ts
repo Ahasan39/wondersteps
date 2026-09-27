@@ -48,12 +48,10 @@ test('fresh player completes five games sequentially with results, unlocks and p
   const progress=await read(page)
   expect(progress.levels[id-1]).toMatchObject({completed:true,attempts:1,bestScore:1100,stars:3})
   expect(progress.levels[id].completed).toBe(false)
-  if(id<5){await expect(page.getByText('Level '+(id+1)+' Unlocked!',{exact:true})).toBeVisible();await page.getByRole('link',{name:'Next Level'}).click()}
-  else await page.getByRole('link',{name:'Back to Adventure',exact:true}).click()
+  await expect(page.getByText('Level '+(id+1)+' Unlocked!',{exact:true})).toBeVisible();await page.getByRole('link',{name:'Next Level'}).click()
  }
- await expect(page.locator('.completed')).toHaveCount(5);await expect(page.locator('.current')).toHaveCount(1)
- await page.reload();expect((await read(page)).coins).toBe(375)
- await page.goto('/wondersteps/#/play/6');await expect(page.getByText(/Shape Match gameplay is coming/)).toBeVisible()
+ await expect(page.getByRole('heading',{name:'Shape Match'})).toBeVisible();await expect(page.getByRole('button',{name:'Start',exact:true})).toBeVisible();expect((await read(page)).coins).toBe(375)
+ await page.goto('/wondersteps/#/levels');await expect(page.locator('.completed')).toHaveCount(5);await expect(page.locator('.current')).toHaveCount(1);await page.reload();expect((await read(page)).coins).toBe(375)
  expect(errors).toEqual([])
 })
 test('replay can improve stars then score worse without lowering bests or farming coins',async({page})=>{

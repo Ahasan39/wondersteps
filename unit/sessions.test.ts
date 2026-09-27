@@ -96,6 +96,7 @@ for(const definition of Object.values(gameRegistry)) test('content mappings for 
   if(q.prompt.kind==='color'){assert.equal(correct.label,q.prompt.name);assert.ok(correct.color)}
   else if(q.prompt.kind==='count'){assert.equal(correct.number,q.prompt.count);assert.ok(q.prompt.count>=1&&q.prompt.count<=10)}
   else if(q.prompt.kind==='alphabet'){assert.equal(correct.id,alphabet.find(a=>a.letter===(q.prompt as {letter:string}).letter)!.choice.id);assert.ok(correct.visual)}
+  else if(q.prompt.kind==='shape'){assert.equal(correct.id,q.prompt.shape);assert.equal(correct.shape,q.prompt.shape)}
   else {assert.equal(correct.label,q.prompt.name);assert.equal(correct.visual,q.prompt.visual)}
  }
 })

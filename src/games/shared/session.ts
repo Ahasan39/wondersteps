@@ -22,9 +22,10 @@ export function validateQuestions(questions: readonly Question[]): void {
     ids.add(question.id)
     if (!question.instruction.trim() || question.choices.length < 3 || question.choices.length > 4) throw new Error('A question needs instructions and 3–4 choices')
     const prompt = question.prompt
-    if (!prompt || !['color', 'count', 'alphabet', 'animal', 'fruit'].includes(prompt.kind)) throw new Error('A valid prompt is required')
+    if (!prompt || !['color', 'count', 'alphabet', 'animal', 'fruit','shape'].includes(prompt.kind)) throw new Error('A valid prompt is required')
     if (prompt.kind === 'count' ? !Number.isInteger(prompt.count) || prompt.count < 1 || prompt.count > 10 || !prompt.visual
       : prompt.kind === 'alphabet' ? !/^[A-Z]$/.test(prompt.letter)
+      : prompt.kind==='shape' ? !prompt.name.trim()||!prompt.shape
       : !prompt.name?.trim() || (prompt.kind !== 'color' && !prompt.visual)) throw new Error('Prompt content is required')
     const choiceIds = new Set(question.choices.map(choice => choice.id))
     if (choiceIds.size !== question.choices.length || question.choices.some(choice => !choice.id || !choice.label.trim())) throw new Error('Choice IDs and labels must be valid')

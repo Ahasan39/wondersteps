@@ -1,7 +1,7 @@
 # WonderSteps
 **Phase 1: Foundation & Design System**
 
-**Current phase: Phase 4.1.1 — Voice Guidance & Audio Balance Polish**
+**Current phase: Phase 5 — World 2: Magic Forest**
 
 Phase 2 added the illustrated adventure entrance and responsive world environments. Phase 3 added the reusable progression engine, safe browser persistence, protected play routes and confirmed progress reset. Phase 4 integrated five real World 1 games. Phase 4.1 polished their audio, reactions and mobile presentation. Phase 4.1.1 adds lightweight voice guidance and rebalances the music without changing educational content, scoring or progression.
 
@@ -55,7 +55,7 @@ Browser checks cover 320, 360, 375, 390, 414, 430, 480, 768, 1024, 1280, 1440 an
 ## Routes
 Hash-based routes work on static GitHub Pages without server rewrites:
 `/`, `/levels`, `/play/:levelId`, `/results/:levelId`, `/achievements`, `/rewards`, `/settings`.
-An unknown-route screen provides a way home. Home Play, Explore and Start journey lead to Levels. Unlocked Levels 1–5 open a short intro and Start button; Levels 6–20 retain their coming-soon stage. Invalid/noncanonical IDs and locked play routes redirect to Levels with replacement navigation. Completed levels remain accessible for replay. Page visits never record attempts or completion. Real completion results appear inside the play route; the separate results route, achievements and rewards remain future-system empty states. Music/SFX controls persist independently. Animations follow the device reduced-motion preference and page entrances take 180ms.
+An unknown-route screen provides a way home. Home Play, Explore and Start journey lead to Levels. Unlocked Levels 1–10 open a game intro and Start button; Levels 11–20 retain their coming-soon stage. Invalid/noncanonical IDs and locked play routes redirect to Levels with replacement navigation. Completed levels remain accessible for replay. Page visits never record attempts or completion. Real completion results appear inside the play route; the separate results route, achievements and rewards remain future-system empty states. Music/SFX/voice controls persist independently. Animations follow the device reduced-motion preference and page entrances take 180ms.
 
 ## Planned adventure
 | World | Levels |
@@ -80,7 +80,7 @@ Start selects ten unique questions and shuffles choice order once. Counting, alp
 
 Each round awards 100 points on the first try, 70 on the second, or 40 on the third or later. Wrong answers never subtract points or advance the round. Every round must eventually be answered correctly. Ten first-try answers earn a 100-point perfect bonus: maximum 1100. World 1 metadata defines 500/750/950 as the one/two/three-star thresholds. A score below 500 earns zero stars but still completes and unlocks the next step.
 
-First completion pays 30/50/75 coins for one/two/three stars (zero coins for zero stars). The existing completion API enforces the one-time reward. Replay retains independent highest score and highest stars and never pays completion coins again, including improvement after an initial zero-coin completion. Results show actual session score/stars, ten correct answers, coins earned, saved bests, and a new-best indicator. Unlock messaging appears only on first completion. Levels 1–4 offer Next Level; Level 5 returns to Adventure and explains that unlocked Level 6 is coming soon.
+First completion pays 30/50/75 coins for one/two/three stars (zero coins for zero stars). The existing completion API enforces the one-time reward. Replay retains independent highest score and highest stars and never pays completion coins again, including improvement after an initial zero-coin completion. Results show actual session score/stars, performance, coins earned, saved bests, and a new-best indicator. Unlock messaging appears only on first completion. Levels 1–9 offer Next Level; Level 10 returns to Adventure after unlocking the coming-soon Cloud Kingdom.
 
 Start calls the existing attempt API exactly once. Back or refresh discards unfinished rounds, while the recorded attempt remains. Returning opens the intro and requires another Start. Transient questions, feedback, timers and score are never stored in PlayerProgress. Replay returns to the intro for a fresh attempt.
 
@@ -150,3 +150,13 @@ Phase 4 adds pure session/content/scoring/reward tests and production-browser te
 Phase 4.1 adds audio preference/manager/synthesis unit coverage and mocked browser-audio tests for gesture activation, accepted-event SFX, blocked playback, music visibility/navigation cleanup, reload without autoplay, result sequencing, replay reward suppression and reduced motion. Gameplay geometry covers all five games at 320×568, 360×640, 375×667, 390×844, 414×896, 430×932, 360×560, all tablet/desktop target widths and 667×375, 740×360, 844×390 landscape. Tests require no speakers.
 
 Phase 4.1.1 adds mocked speech tests for all five prompt semantics, one narration per round, Hear Again, rotating positive feedback, cancellation, music ducking, independent/master preferences, navigation and visibility cleanup, voice-off behavior and unsupported-browser fallback. Tests never require actual speaker output.
+
+## World 2 gameplay
+
+Magic Forest extends the central game registry and existing progress/result contracts through Levels 6–10. Shape Match uses ten unique SVG/CSS shape questions and the established question session. Memory Cards uses six cards and three pairs with a locked two-card resolution state. Letter Hunt asks for three copies of a target among six distractors. Number Order uses tap-to-place four-number sequences. Mini Challenge mixes three shape, three letter, two number and two visual-memory rounds. Level 11 unlocks after the finale but remains a guarded coming-soon destination.
+
+Shape Match and the ten-round special games score a clean round at 100, one-error completion at 70, and two-or-more-error completion at 40, with a 100-point perfect-session bonus. Memory starts at 1100 and subtracts 100 per mismatch with a 500-point floor. All use the unchanged 500/750/950 star thresholds and first-completion 30/50/75 coin policy. Replays preserve independent bests and cannot award coins again.
+
+World 2 content lives separately from interaction state machines. Randomization remains injectable in pure functions. Native buttons provide keyboard and screen-reader access; found, matched and ordered states have explicit names. Hear Again and browser-native voice reuse the central audio provider, while frequent card/letter taps avoid excessive narration. CSS forest surfaces, shapes and symbols add no image assets. Portrait uses large grids; short landscape separates Pip from the interaction grid; desktop caps the stage width. Reduced motion keeps every state readable without animation.
+
+Phase 5 keeps Home/Map code separate from the lazy GamePage route. Compared with Phase 4.1.1, initial main JS is 364.19 KB / 115.90 KB gzip (+0.02 KB gzip), gameplay is 54.39 / 18.57 KB (+2.73 KB gzip), CSS is 49.06 / 10.97 KB (+0.78 KB gzip), shared progress is 56.12 / 20.29 KB, and lazy audio remains 2.03 / 1.00 KB. No dependency or static asset was added. Lighthouse is not installed, so no score is claimed.

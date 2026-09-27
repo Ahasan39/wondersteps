@@ -4,6 +4,7 @@ import { useProgress } from '../hooks/useProgress'
 import { GameShell } from '../components/game/GameShell'
 import { resolveGame } from '../games/registry'
 import { LearningGame } from '../games/shared/LearningGame'
+import { World2Game } from '../games/world2/World2Game'
 
 export default function GamePage() {
   const { levelId } = useParams()
@@ -14,5 +15,6 @@ export default function GamePage() {
   const world = worlds.find(item => item.id === level.worldId)!
   const game = resolveGame(id)
   if (game) return <LearningGame key={id} level={level} world={world} game={game}/>
+  if(id>=7&&id<=10)return <World2Game key={id} level={level} world={world}/>
   return <GameShell level={level} world={world} progress={getLevelProgress(id)!} status="not-ready"/>
 }

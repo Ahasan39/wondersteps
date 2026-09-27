@@ -14,6 +14,7 @@ export function promptText(question:Question){
  if(prompt.kind==='color')return `Find the color ${prompt.name}.`
  if(prompt.kind==='count'){const noun=prompt.visual==='star'?'stars':prompt.visual==='apple'?'apples':'flowers';return `How many ${noun} can you count?`}
  if(prompt.kind==='alphabet')return `Which one starts with ${prompt.letter}?`
+ if(prompt.kind==='shape')return `Find the ${prompt.name}.`
  return `Find the ${prompt.name}.`
 }
 export function createVoiceManager({synthesis,createUtterance,onSpeakingChange,random=Math.random}:VoiceDependencies){
@@ -33,6 +34,7 @@ export function createVoiceManager({synthesis,createUtterance,onSpeakingChange,r
  return {
   activate(){activated=true},setEnabled(value:boolean){enabled=value;if(!value)cancel()},setHidden(value:boolean){hidden=value;if(value)cancel()},
   speakPrompt(question:Question){return speak(promptText(question),'prompt')},
+  speakInstruction(text:string){return speak(text,'prompt')},
   speakCorrectPraise(){const next=pick(praise,lastPraise);lastPraise=next.index;return speak(next.text,'correct')},
   speakRetryEncouragement(){const next=pick(encouragement,lastRetry);lastRetry=next.index;return speak(next.text,'retry')},
   speakLevelComplete(){return speak('Level complete!','complete')},cancel,
